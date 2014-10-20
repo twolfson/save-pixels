@@ -103,7 +103,9 @@ function testArray(t, array, format, cb) {
             }
           }
         }
-        fs.unlinkSync("temp." + format)
+        if (!process.env.TEST_DEBUG) {
+          fs.unlinkSync("temp." + format)
+        }
         cb()
       })
     })
