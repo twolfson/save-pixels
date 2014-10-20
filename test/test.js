@@ -69,7 +69,7 @@ function testArray(t, array, format, cb) {
         var dataHeight = data.shape.length <= 3 ? data.shape[1] : data.shape[2]
         t.equals(arrayWidth, dataWidth)
         t.equals(arrayHeight, dataHeight)
-
+        
         if(array.shape.length === 2) {
           for(var i=0; i<array.shape[0]; ++i) {
             for(var j=0; j<array.shape[1]; ++j) {
@@ -158,7 +158,7 @@ tap("save-pixels saving a RGB jpeg", function(t) {
 
 tap("save-pixels saving an unanimated gif", function(t) {
   var x = zeros([64, 64, 4])
-
+  
   for(var i=0; i<32; ++i) {
     for(var j=0; j<32; ++j) {
       x.set(i, j, 0, 0)
@@ -186,7 +186,7 @@ tap("save-pixels saving an unanimated gif", function(t) {
 
 tap("save-pixels saving an animated gif", function(t) {
   var x = zeros([2, 64, 64, 4])
-
+  
   for(var i=0; i<32; ++i) {
     for(var j=0; j<32; ++j) {
       x.set(0, i, j, 0, 0)
@@ -205,7 +205,7 @@ tap("save-pixels saving an animated gif", function(t) {
       x.set(0, i+32, j+32, 1, 0)
       x.set(0, i+32, j+32, 2, 0)
       x.set(0, i+32, j+32, 3, 255)
-
+      
       x.set(1, i, j, 0, 255)
       x.set(1, i, j, 1, 255)
       x.set(1, i, j, 2, 255)
