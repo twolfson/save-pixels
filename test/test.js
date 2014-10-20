@@ -63,11 +63,13 @@ function testArray(t, array, format, cb) {
           return
         }
         
+        var arrayWidth = array.shape.length <= 3 ? array.shape[0] : array.shape[1]
+        var arrayHeight = array.shape.length <= 3 ? array.shape[1] : array.shape[2]
         var dataWidth = data.shape.length <= 3 ? data.shape[0] : data.shape[1]
         var dataHeight = data.shape.length <= 3 ? data.shape[1] : data.shape[2]
-        t.equals(array.shape[0], dataWidth)
-        t.equals(array.shape[1], dataHeight)
-        
+        t.equals(arrayWidth, dataWidth)
+        t.equals(arrayHeight, dataHeight)
+
         if(array.shape.length === 2) {
           for(var i=0; i<array.shape[0]; ++i) {
             for(var j=0; j<array.shape[1]; ++j) {
