@@ -8,7 +8,16 @@ var through = require("through")
 
 function handleData(array, data, frame) {
   var i, j, ptr = 0, c
-  if(array.shape.length === 3) {
+  if(array.shape.length === 4) {
+    for(j=0; j<array.shape[2]; ++j) {
+      for(i=0; i<array.shape[1]; ++i) {
+        data[ptr++] = array.get(frame,i,j,0)>>>0
+        data[ptr++] = array.get(frame,i,j,1)>>>0
+        data[ptr++] = array.get(frame,i,j,2)>>>0
+        data[ptr++] = array.get(frame,i,j,3)>>>0
+      }
+    }
+  } else if(array.shape.length === 3) {
     if(array.shape[2] === 3) {
       for(j=0; j<array.shape[1]; ++j) {
         for(i=0; i<array.shape[0]; ++i) {
