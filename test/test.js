@@ -82,7 +82,11 @@ function testArray(t, array, format, cb) {
           for(var i=0; i<array.shape[0]; ++i) {
             for(var j=0; j<array.shape[1]; ++j) {
               for(var k=0; k<array.shape[2]; ++k) {
-                t.equals(array.get(i,j,k), data.get(i,j,k))
+                if(data.shape.length === 3) {
+                  t.equals(array.get(i,j,k), data.get(i,j,k))
+                } else {
+                  t.equals(array.get(i,j,k), data.get(0,i,j,k))
+                }
               }
             }
           }
