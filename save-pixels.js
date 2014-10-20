@@ -1,6 +1,7 @@
 "use strict"
 
 var ContentStream = require("contentstream")
+var GifEncoder = require("gif-encoder")
 var jpegJs = require("jpeg-js")
 var PNG = require("pngjs").PNG
 var through = require("through")
@@ -80,6 +81,18 @@ module.exports = function savePixels(array, type) {
       }
       var jpegImageData = jpegJs.encode(rawImageData)
       return new ContentStream(jpegImageData.data)
+
+    case "GIF":
+    case ".GIF":
+      var width = array.shape[0]
+      var height = array.shape[1]
+      var data = new Buffer(width * height * 4)
+      data = handleData(array, data)
+      var gif = new GifEncoder(width, height)
+      gif.writeHeader()
+      gif.addFrame(data)
+      gif.finish()
+      return gif
 
     case "PNG":
     case ".PNG":
