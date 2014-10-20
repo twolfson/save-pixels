@@ -63,8 +63,10 @@ function testArray(t, array, format, cb) {
           return
         }
         
-        t.equals(array.shape[0], data.shape[0])
-        t.equals(array.shape[1], data.shape[1])
+        var dataWidth = data.shape.length <= 3 ? data.shape[0] : data.shape[1]
+        var dataHeight = data.shape.length <= 3 ? data.shape[1] : data.shape[2]
+        t.equals(array.shape[0], dataWidth)
+        t.equals(array.shape[1], dataHeight)
         
         if(array.shape.length === 2) {
           for(var i=0; i<array.shape[0]; ++i) {
@@ -136,7 +138,7 @@ function testArray(t, array, format, cb) {
 //   })
 // })
 
-tap("save-pixels saving an animated gif", function(t) {
+tap("save-pixels saving an unanimated gif", function(t) {
   // var x = zeros([2, 64, 64, 4])
   var x = zeros([64, 64, 4])
 
