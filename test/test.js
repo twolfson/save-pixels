@@ -80,7 +80,7 @@ function testArray(t, array, format, cb) {
               }
             }
           }
-        } else {
+        } else if(array.shape.length === 3) {
           for(var i=0; i<array.shape[0]; ++i) {
             for(var j=0; j<array.shape[1]; ++j) {
               for(var k=0; k<array.shape[2]; ++k) {
@@ -88,6 +88,16 @@ function testArray(t, array, format, cb) {
                   t.equals(array.get(i,j,k), data.get(i,j,k))
                 } else {
                   t.equals(array.get(i,j,k), data.get(0,i,j,k))
+                }
+              }
+            }
+          }
+        } else {
+          for(var i=0; i<array.shape[0]; ++i) {
+            for(var j=0; j<array.shape[1]; ++j) {
+              for(var k=0; k<array.shape[2]; ++k) {
+                for(var l=0; l<array.shape[3]; ++l) {
+                  t.equals(array.get(i,j,k,l), data.get(i,j,k,l))
                 }
               }
             }
