@@ -39,6 +39,12 @@ function compareImages(t, actualFilepath, expectedFilepath, deepEqual, cb) {
     })
   })
 }
+function assertImagesEqual(t, actualFilepath, expectedFilepath, cb) {
+  compareImages(t, actualFilepath, expectedFilepath, true, cb)
+}
+function assertImagesNotEqual(t, actualFilepath, expectedFilepath, cb) {
+  compareImages(t, actualFilepath, expectedFilepath, false, cb)
+}
 
 function testArray(t, array, filepath, format, cb) {
   writePixels(t, array, filepath, format, null, function(err) {
@@ -153,7 +159,7 @@ tap("save-pixels saving a RGB jpeg", function(t) {
       return
     }
 
-    compareImages(t, actualFilepath, expectedFilepath, true, function() {
+    assertImagesEqual(t, actualFilepath, expectedFilepath, function() {
       if (!process.env.TEST_DEBUG) {
         fs.unlinkSync(actualFilepath)
       }
@@ -262,7 +268,7 @@ tap("save-pixels saving 2 jpeg images with the same quality are identical", func
         return
       }
 
-      compareImages(t, firstFilepath, secondFilepath, true, function() {
+      assertImagesEqual(t, firstFilepath, secondFilepath, function() {
         if (!process.env.TEST_DEBUG) {
           fs.unlinkSync(firstFilepath)
           fs.unlinkSync(secondFilepath)
@@ -300,7 +306,7 @@ tap("save-pixels saving 2 jpeg images with the different qualities are different
         return
       }
 
-      compareImages(t, lowQualityFilepath, highQualityFilepath, false, function() {
+      assertImagesNotEqual(t, lowQualityFilepath, highQualityFilepath, function() {
         if (!process.env.TEST_DEBUG) {
           fs.unlinkSync(lowQualityFilepath)
           fs.unlinkSync(highQualityFilepath)
