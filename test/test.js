@@ -7,9 +7,9 @@ var getPixels = require("get-pixels")
 var fs = require("fs")
 var tap = require("tape")
 
-function writePixels(t, array, filepath, format, cb) {
+function writePixels(t, array, filepath, format, options, cb) {
   var out = fs.createWriteStream(filepath)
-  var pxstream = savePixels(array, format)
+  var pxstream = savePixels(array, format, options)
   pxstream.pipe(out)
   .on("error", cb)
   .on("close", cb)
@@ -37,7 +37,7 @@ function compareImages(t, actualFilepath, expectedFilepath, cb) {
 }
 
 function testArray(t, array, filepath, format, cb) {
-  writePixels(t, array, filepath, format, function(err) {
+  writePixels(t, array, filepath, format, null, function(err) {
     if (err) {
       t.assert(false, err)
       cb()
@@ -229,5 +229,81 @@ tap("save-pixels saving an animated gif", function(t) {
   }
   testArray(t, x, "temp.gif", "gif", function() {
     t.end()
+  })
+})
+
+tap("save-pixels saving 2 jpeg images with the same quality are identical", function(t) {
+  var x = zeros([64, 64, 3])
+  var firstFilepath = "temp1.jpeg"
+  var secondFilepath = "temp2.jpeg"
+
+  for(var i=0; i<64; ++i) {
+    for(var j=0; j<64; ++j) {
+      x.set(i, j, 0, i)
+      x.set(i, j, 0, j)
+      x.set(i, j, 0, i+2*j)
+    }
+  }
+  writePixels(t, x, firstFilepath, "jpeg", {quality: 20}, function(err) {
+    if(err) {
+      t.assert(false, err)
+      t.end()
+      return
+    }
+
+    writePixels(t, x, secondFilepath, "jpeg", {quality: 20}, function(err) {
+      if(err) {
+        t.assert(false, err)
+        t.end()
+        return
+      }
+
+      compareImages(t, firstFilepath, secondFilepath, function() {
+        if (!process.env.TEST_DEBUG) {
+          fs.unlinkSync(firstFilepath)
+          fs.unlinkSync(secondFilepath)
+        }
+
+        t.end()
+      })
+    })
+  })
+})
+
+tap("save-pixels saving 2 jpeg images with the different qualities are different", function(t) {
+  var x = zeros([64, 64, 3])
+  var lowQualityFilepath = "temp-low.jpeg"
+  var highQualityFilepath = "temp-high.jpeg"
+
+  for(var i=0; i<64; ++i) {
+    for(var j=0; j<64; ++j) {
+      x.set(i, j, 0, i)
+      x.set(i, j, 0, j)
+      x.set(i, j, 0, i+2*j)
+    }
+  }
+  writePixels(t, x, lowQualityFilepath, "jpeg", {quality: 1}, function(err) {
+    if(err) {
+      t.assert(false, err)
+      t.end()
+      return
+    }
+
+    writePixels(t, x, highQualityFilepath, "jpeg", {quality: 100}, function(err) {
+      if(err) {
+        t.assert(false, err)
+        t.end()
+        return
+      }
+
+      compareImages(t, lowQualityFilepath, highQualityFilepath, function() {
+        if (!process.env.TEST_DEBUG) {
+          fs.unlinkSync(lowQualityFilepath)
+          fs.unlinkSync(highQualityFilepath)
+        }
+
+        t.end()
+      })
+    })
   })
 })
