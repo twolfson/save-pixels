@@ -5,7 +5,6 @@ var ndarray = require("ndarray")
 var savePixels = require("../save-pixels.js")
 var getPixels = require("get-pixels")
 var fs = require("fs")
-var path = require("path")
 var tap = require("tape")
 
 function writePixels(t, array, filepath, format, cb) {
@@ -134,7 +133,7 @@ tap("save-pixels saving a RGB png", function(t) {
 tap("save-pixels saving a RGB jpeg", function(t) {
   var x = zeros([64, 64, 3])
   var actualFilepath = "temp.jpeg"
-  var expectedFilepath = path.join(__dirname, "expected.jpeg")
+  var expectedFilepath = "expected.jpeg"
 
   for(var i=0; i<64; ++i) {
     for(var j=0; j<64; ++j) {
