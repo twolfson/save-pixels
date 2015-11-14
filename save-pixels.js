@@ -71,7 +71,8 @@ function haderror(err) {
   return result
 }
 
-module.exports = function savePixels(array, type) {
+module.exports = function savePixels(array, type, options) {
+  options = options || {}
   switch(type.toUpperCase()) {
     case "JPG":
     case ".JPG":
@@ -89,7 +90,7 @@ module.exports = function savePixels(array, type) {
         height: height
       }
       var jpegImageData = jpegJs.encode(rawImageData)
-      return new ContentStream(jpegImageData.data)
+      return new ContentStream(jpegImageData.data, options.quality)
 
     case "GIF":
     case ".GIF":
