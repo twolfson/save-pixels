@@ -287,11 +287,10 @@ tap("save-pixels saving 2 jpeg images with the different qualities are different
 
   for(var i=0; i<64; ++i) {
     for(var j=0; j<64; ++j) {
-      // 1x1 black and white checkerboard pattern
-      var value = (i % 2 === 0 && j % 2 === 0) ? 255 : 0
-      x.set(i, j, 0, value)
-      x.set(i, j, 0, value)
-      x.set(i, j, 0, value)
+      // 3x2 black and white checkerboard pattern
+      x.set(i, j, 0, i)
+      x.set(i, j, 1, j)
+      x.set(i, j, 2, i * j % 255)
     }
   }
   writePixels(t, x, lowQualityFilepath, "jpeg", {quality: 1}, function(err) {

@@ -90,6 +90,7 @@ module.exports = function savePixels(array, type, options) {
         height: height
       }
       var jpegImageData = jpegJs.encode(rawImageData)
+      console.log(options.quality);
       return new ContentStream(jpegImageData.data, options.quality)
 
     case "GIF":
