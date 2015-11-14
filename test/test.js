@@ -15,7 +15,7 @@ function writePixels(t, array, filepath, format, options, cb) {
   .on("close", cb)
 }
 
-function compareImages(t, actualFilepath, expectedFilepath, cb) {
+function compareImages(t, actualFilepath, expectedFilepath, deepEqual, cb) {
   getPixels(actualFilepath, function(err, actualPixels) {
     if(err) {
       t.assert(false, err)
@@ -30,7 +30,11 @@ function compareImages(t, actualFilepath, expectedFilepath, cb) {
         return
       }
 
-      t.deepEqual(actualPixels, expectedPixels)
+      if (deepEqual) {
+        t.deepEqual(actualPixels, expectedPixels)
+      } else {
+        t.notDeepEqual(actualPixels, expectedPixels)
+      }
       cb()
     })
   })
@@ -142,14 +146,14 @@ tap("save-pixels saving a RGB jpeg", function(t) {
       x.set(i, j, 0, i+2*j)
     }
   }
-  writePixels(t, x, actualFilepath, "jpeg", function(err) {
+  writePixels(t, x, actualFilepath, "jpeg", null, function(err) {
     if(err) {
       t.assert(false, err)
       t.end()
       return
     }
 
-    compareImages(t, actualFilepath, expectedFilepath, function() {
+    compareImages(t, actualFilepath, expectedFilepath, true, function() {
       if (!process.env.TEST_DEBUG) {
         fs.unlinkSync(actualFilepath)
       }
@@ -258,7 +262,7 @@ tap("save-pixels saving 2 jpeg images with the same quality are identical", func
         return
       }
 
-      compareImages(t, firstFilepath, secondFilepath, function() {
+      compareImages(t, firstFilepath, secondFilepath, true, function() {
         if (!process.env.TEST_DEBUG) {
           fs.unlinkSync(firstFilepath)
           fs.unlinkSync(secondFilepath)
@@ -296,7 +300,7 @@ tap("save-pixels saving 2 jpeg images with the different qualities are different
         return
       }
 
-      compareImages(t, lowQualityFilepath, highQualityFilepath, function() {
+      compareImages(t, lowQualityFilepath, highQualityFilepath, false, function() {
         if (!process.env.TEST_DEBUG) {
           fs.unlinkSync(lowQualityFilepath)
           fs.unlinkSync(highQualityFilepath)
