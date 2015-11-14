@@ -7,48 +7,37 @@ var getPixels = require("get-pixels")
 var fs = require("fs")
 var tap = require("tape")
 
-function writePixels(t, array, format, cb) {
-  var out = fs.createWriteStream("temp." + format)
+function writePixels(t, array, filepath, format, cb) {
+  var out = fs.createWriteStream(filepath)
   var pxstream = savePixels(array, format)
   pxstream.pipe(out)
   .on("error", cb)
   .on("close", cb)
 }
 
-function compareImages(t, array, format, cb) {
-  writePixels(t, array, format, function(err) {
-    if (err) {
+function compareImages(t, actualFilepath, expectedFilepath, cb) {
+  getPixels(actualFilepath, function(err, actualPixels) {
+    if(err) {
       t.assert(false, err)
       cb()
       return
     }
 
-    getPixels("temp." + format, function(err, actualPixels) {
+    getPixels(expectedFilepath, function(err, expectedPixels) {
       if(err) {
         t.assert(false, err)
         cb()
         return
       }
 
-      getPixels("expected." + format, function(err, expectedPixels) {
-        if(err) {
-          t.assert(false, err)
-          cb()
-          return
-        }
-
-        t.deepEqual(actualPixels, expectedPixels)
-        if (!process.env.TEST_DEBUG) {
-          fs.unlinkSync("temp." + format)
-        }
-        cb()
-      })
+      t.deepEqual(actualPixels, expectedPixels)
+      cb()
     })
   })
 }
 
-function testArray(t, array, format, cb) {
-  writePixels(t, array, format, function(err) {
+function testArray(t, array, filepath, format, cb) {
+  writePixels(t, array, filepath, format, function(err) {
     if (err) {
       t.assert(false, err)
       cb()
@@ -56,7 +45,7 @@ function testArray(t, array, format, cb) {
     }
 
     process.nextTick(function() {
-      getPixels("temp." + format, function(err, data) {
+      getPixels(filepath, function(err, data) {
         if(err) {
           t.assert(false, err)
           cb()
@@ -104,7 +93,7 @@ function testArray(t, array, format, cb) {
           }
         }
         if (!process.env.TEST_DEBUG) {
-          fs.unlinkSync("temp." + format)
+          fs.unlinkSync(filepath)
         }
         cb()
       })
@@ -121,7 +110,7 @@ tap("save-pixels saving a monoscale png", function(t) {
       x.set(i, j, i+2*j)
     }
   }
-  testArray(t, x, "png", function() {
+  testArray(t, x, "temp.png", "png", function() {
     t.end()
   })
 })
@@ -136,14 +125,16 @@ tap("save-pixels saving a RGB png", function(t) {
       x.set(i, j, 2, i+2*j)
     }
   }
-  testArray(t, x, "png", function() {
+  testArray(t, x, "temp.png", "png", function() {
     t.end()
   })
 })
 
 tap("save-pixels saving a RGB jpeg", function(t) {
   var x = zeros([64, 64, 3])
-  
+  var actualFilepath = "temp.jpeg"
+  var expectedFilepath = "expected.jpeg"
+
   for(var i=0; i<64; ++i) {
     for(var j=0; j<64; ++j) {
       x.set(i, j, 0, i)
@@ -151,8 +142,20 @@ tap("save-pixels saving a RGB jpeg", function(t) {
       x.set(i, j, 0, i+2*j)
     }
   }
-  compareImages(t, x, "jpeg", function() {
-    t.end()
+  writePixels(t, x, actualFilepath, "jpeg", function(err) {
+    if(err) {
+      t.assert(false, err)
+      t.end()
+      return
+    }
+
+    compareImages(t, actualFilepath, expectedFilepath, function() {
+      if (!process.env.TEST_DEBUG) {
+        fs.unlinkSync("temp." + format)
+      }
+
+      t.end()
+    })
   })
 })
 
@@ -179,7 +182,7 @@ tap("save-pixels saving an unanimated gif", function(t) {
       x.set(i+32, j+32, 3, 255)
     }
   }
-  testArray(t, x, "gif", function() {
+  testArray(t, x, "temp.gif", "gif", function() {
     t.end()
   })
 })
@@ -224,7 +227,7 @@ tap("save-pixels saving an animated gif", function(t) {
       x.set(1, i+32, j+32, 3, 255)
     }
   }
-  testArray(t, x, "gif", function() {
+  testArray(t, x, "temp.gif", "gif", function() {
     t.end()
   })
 })
