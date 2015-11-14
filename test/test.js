@@ -249,9 +249,11 @@ tap("save-pixels saving 2 jpeg images with the same quality are identical", func
 
   for(var i=0; i<64; ++i) {
     for(var j=0; j<64; ++j) {
-      x.set(i, j, 0, i)
-      x.set(i, j, 0, j)
-      x.set(i, j, 0, i+2*j)
+      // 1x1 black and white checkerboard pattern
+      var value = (i % 2 === 0 && j % 2 === 0) ? 255 : 0
+      x.set(i, j, 0, value)
+      x.set(i, j, 1, value)
+      x.set(i, j, 2, value)
     }
   }
   writePixels(t, x, firstFilepath, "jpeg", {quality: 20}, function(err) {
