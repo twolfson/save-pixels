@@ -5,7 +5,6 @@ var ndarray = require("ndarray")
 var savePixels = require("../save-pixels.js")
 var getPixels = require("get-pixels")
 var fs = require("fs")
-var lena = require("lena")
 var tap = require("tape")
 
 function writePixels(t, array, filepath, format, options, cb) {
@@ -282,17 +281,27 @@ tap("save-pixels saving 2 jpeg images with the same quality are identical", func
 })
 
 tap("save-pixels saving 2 jpeg images with the different qualities are different", function(t) {
+  var x = zeros([64, 64, 3])
   var lowQualityFilepath = "temp-low.jpeg"
   var highQualityFilepath = "temp-high.jpeg"
 
-  writePixels(t, lena, lowQualityFilepath, "jpeg", {quality: 10}, function(err) {
+  for(var i=0; i<64; ++i) {
+    for(var j=0; j<64; ++j) {
+      // 1x1 black and white checkerboard pattern
+      var value = (i % 2 === 0 && j % 2 === 0) ? 255 : 0
+      x.set(i, j, 0, value)
+      x.set(i, j, 1, value)
+      x.set(i, j, 2, value)
+    }
+  }
+  writePixels(t, x, lowQualityFilepath, "jpeg", {quality: 1}, function(err) {
     if(err) {
       t.assert(false, err)
       t.end()
       return
     }
 
-    writePixels(t, lena, highQualityFilepath, "jpeg", {quality: 90}, function(err) {
+    writePixels(t, x, highQualityFilepath, "jpeg", {quality: 100}, function(err) {
       if(err) {
         t.assert(false, err)
         t.end()

@@ -16,7 +16,6 @@
   },
   "devDependencies": {
     "get-pixels": "^3.0.1",
-    "lena": "~1.0.0",
     "ndarray": "^1.0.0",
     "ndarray-scratch": "^1.1.1",
     "tape": "^3.0.1"
